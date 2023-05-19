@@ -1,35 +1,43 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 	"path/filepath"
 )
 
+func findClosest(filename string) (string, error) {
+	pwd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	var path string
+	for true {
+		path = filepath.Join(pwd, filename)
+		if _, err := os.Stat(path); err == nil {
+			break
+		}
+		if pwd == "/" {
+			return "", fmt.Errorf("File not found: %s", filename)
+		}
+		pwd = filepath.Dir(pwd)
+	}
+	return path, nil
+}
+
 func main() {
-	if (len(os.Args) < 2) {
+	if len(os.Args) < 2 {
 		fmt.Println("[ERROR] No arguments provided.\n")
 		fmt.Println("Usage: closest [pattern]")
 		os.Exit(1)
 	}
 
-	pwd, err := os.Getwd()
+	filename := os.Args[1]
+	path, err := findClosest(filename)
 	if err != nil {
-		fmt.Printf("[ERROR] %s\n", err)
+		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-
-	filename := os.Args[1]
-	for true {
-		path := filepath.Join(pwd, filename)
-		if _, err := os.Stat(path); err == nil {
-			fmt.Println(path)
-			break
-		}
-		if pwd == "/" {
-			fmt.Printf("[ERROR] File not found: %s\n", filename)
-			break
-		}
-		pwd = filepath.Dir(pwd)
-	}
+	fmt.Println(path)
 }
