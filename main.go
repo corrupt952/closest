@@ -1,43 +1,62 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func findClosest(filename string) (string, error) {
+func findClosest(filename string, searchAll bool) ([]string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
-		return "", err
+		return nil, nil
 	}
 
-	var path string
+	var paths []string
 	for true {
-		path = filepath.Join(pwd, filename)
+		path := filepath.Join(pwd, filename)
 		if _, err := os.Stat(path); err == nil {
-			break
+			paths = append(paths, path)
+			if !searchAll {
+				break
+			}
 		}
+
 		if pwd == "/" {
-			return "", fmt.Errorf("File not found: %s", filename)
+			if len(paths) == 0 {
+				return nil, fmt.Errorf("File not found: %s", filename)
+			}
+			break
 		}
 		pwd = filepath.Dir(pwd)
 	}
-	return path, nil
+	return paths, nil
+}
+
+func printUsage() {
+	fmt.Println("Usage: closest [options] [pattern]")
+	fmt.Println("Options:")
+	flag.PrintDefaults()
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("[ERROR] No arguments provided.\n")
-		fmt.Println("Usage: closest [pattern]")
+	flag.Usage = printUsage
+	searchAll := flag.Bool("a", false, "Search all files[default: false]")
+	flag.Parse()
+
+	args := flag.Args()
+	if len(args) < 1 {
+		flag.Usage()
 		os.Exit(1)
 	}
 
-	filename := os.Args[1]
-	path, err := findClosest(filename)
+	filename := args[0]
+	paths, err := findClosest(filename, *searchAll)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-	fmt.Println(path)
+	fmt.Println(strings.Join(paths, "\n"))
 }
