@@ -74,6 +74,9 @@ To find all `.envrc` from `production` to the root directory, run the following:
 closest -a .envrc
 ```
 
+Please take care that **the filename must be prefix with `-a`**.
+For example, `closest .envrc -a` doesn't work.
+
 The output:
 
 ```sh
