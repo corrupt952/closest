@@ -1,30 +1,6 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  dependencyDashboard: true,
-  assignees: ["@corrupt952"],
-  reviewers: ["@corrupt952"],
-
-  // https://docs.renovatebot.com/key-concepts/scheduling/
-  schedule: ["after 9am"],
-
   extends: [
-    "config:base",
-
-    // https://docs.renovatebot.com/presets-default/
-    ":timezone(Asia/Tokyo)",
-    ":prHourlyLimitNone",
-    ":prConcurrentLimitNone",
-
-    // https://github.com/aquaproj/aqua-renovate-config
-    "github>aquaproj/aqua-renovate-config#1.6.0",
-  ],
-
-  // Automerge
-  platformAutomerge: true,
-  packageRules: [
-    {
-      matchUpdateTypes: ["minor", "patch", "pin", "digest"],
-      automerge: true,
-    },
+    "github>corrupt952/.github:default.json5",
   ],
 }
