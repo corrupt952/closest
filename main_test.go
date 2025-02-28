@@ -22,58 +22,58 @@ func TestParseFlags(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		name           string
-		args           []string
-		expectPattern  string
+		name            string
+		args            []string
+		expectPattern   string
 		expectSearchAll bool
-		expectUseRegex bool
-		expectVersion  bool
-		expectErr      bool
+		expectUseRegex  bool
+		expectVersion   bool
+		expectErr       bool
 	}{
 		{
-			name:           "Basic pattern",
-			args:           []string{"closest", "config.yaml"},
-			expectPattern:  "config.yaml",
+			name:            "Basic pattern",
+			args:            []string{"closest", "config.yaml"},
+			expectPattern:   "config.yaml",
 			expectSearchAll: false,
-			expectUseRegex: false,
-			expectVersion:  false,
-			expectErr:      false,
+			expectUseRegex:  false,
+			expectVersion:   false,
+			expectErr:       false,
 		},
 		{
-			name:           "With search all flag",
-			args:           []string{"closest", "-a", "config.yaml"},
-			expectPattern:  "config.yaml",
+			name:            "With search all flag",
+			args:            []string{"closest", "-a", "config.yaml"},
+			expectPattern:   "config.yaml",
 			expectSearchAll: true,
-			expectUseRegex: false,
-			expectVersion:  false,
-			expectErr:      false,
+			expectUseRegex:  false,
+			expectVersion:   false,
+			expectErr:       false,
 		},
 		{
-			name:           "With regex flag",
-			args:           []string{"closest", "-r", ".*\\.yaml$"},
-			expectPattern:  ".*\\.yaml$",
+			name:            "With regex flag",
+			args:            []string{"closest", "-r", ".*\\.yaml$"},
+			expectPattern:   ".*\\.yaml$",
 			expectSearchAll: false,
-			expectUseRegex: true,
-			expectVersion:  false,
-			expectErr:      false,
+			expectUseRegex:  true,
+			expectVersion:   false,
+			expectErr:       false,
 		},
 		{
-			name:           "With version flag",
-			args:           []string{"closest", "-v"},
-			expectPattern:  "",
+			name:            "With version flag",
+			args:            []string{"closest", "-v"},
+			expectPattern:   "",
 			expectSearchAll: false,
-			expectUseRegex: false,
-			expectVersion:  true,
-			expectErr:      false,
+			expectUseRegex:  false,
+			expectVersion:   true,
+			expectErr:       false,
 		},
 		{
-			name:           "Missing pattern",
-			args:           []string{"closest"},
-			expectPattern:  "",
+			name:            "Missing pattern",
+			args:            []string{"closest"},
+			expectPattern:   "",
 			expectSearchAll: false,
-			expectUseRegex: false,
-			expectVersion:  false,
-			expectErr:      true,
+			expectUseRegex:  false,
+			expectVersion:   false,
+			expectErr:       true,
 		},
 	}
 
