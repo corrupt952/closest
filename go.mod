@@ -1,3 +1,3 @@
 module corrupt952/closest
 
-go 1.19
+go 1.22

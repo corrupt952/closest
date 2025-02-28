@@ -7,7 +7,7 @@ Thank you for your interest in contributing to `closest`! This document provides
 ### Prerequisites
 
 - Git
-- Go (we recommend using [aqua](https://github.com/aquaproj/aqua) for installation)
+- Go 1.22 or later (we recommend using [aqua](https://github.com/aquaproj/aqua) for installation)
 
 ### Setting Up the Development Environment
 
