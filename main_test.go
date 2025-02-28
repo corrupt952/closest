@@ -4,8 +4,19 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
+	"strings"
 	"testing"
 )
+
+// normalizePath handles platform-specific path differences
+// On macOS, /var is a symlink to /private/var, so we need to handle this
+func normalizePath(path string) string {
+	if runtime.GOOS == "darwin" && strings.HasPrefix(path, "/private/") {
+		return strings.TrimPrefix(path, "/private")
+	}
+	return path
+}
 
 func createTestEnvironment(t *testing.T) (string, func()) {
 	// Create a temporary directory structure for testing
@@ -130,7 +141,18 @@ func TestFindClosest(t *testing.T) {
 
 			// Check results
 			if !tc.expectErr {
-				if !reflect.DeepEqual(paths, tc.expected) {
+				// Normalize paths for comparison
+				normalizedPaths := make([]string, len(paths))
+				for i, p := range paths {
+					normalizedPaths[i] = normalizePath(p)
+				}
+
+				normalizedExpected := make([]string, len(tc.expected))
+				for i, p := range tc.expected {
+					normalizedExpected[i] = normalizePath(p)
+				}
+
+				if !reflect.DeepEqual(normalizedPaths, normalizedExpected) {
 					t.Errorf("Expected paths: %v, got: %v", tc.expected, paths)
 				}
 			}
@@ -230,17 +252,28 @@ func TestFindClosestRegex(t *testing.T) {
 					if len(paths) != len(tc.expected) {
 						t.Errorf("Expected %d paths, got %d", len(tc.expected), len(paths))
 					} else {
+						// Normalize paths for comparison
+						normalizedPaths := make([]string, len(paths))
+						for i, p := range paths {
+							normalizedPaths[i] = normalizePath(p)
+						}
+
+						normalizedExpected := make([]string, len(tc.expected))
+						for i, p := range tc.expected {
+							normalizedExpected[i] = normalizePath(p)
+						}
+
 						// Check that all expected paths are in the result
-						for _, expectedPath := range tc.expected {
+						for _, expectedPath := range normalizedExpected {
 							found := false
-							for _, actualPath := range paths {
+							for _, actualPath := range normalizedPaths {
 								if expectedPath == actualPath {
 									found = true
 									break
 								}
 							}
 							if !found {
-								t.Errorf("Expected path %s not found in result %v", expectedPath, paths)
+								t.Errorf("Expected path %s not found in normalized result %v", expectedPath, normalizedPaths)
 							}
 						}
 					}
