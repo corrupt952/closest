@@ -15,6 +15,7 @@ There are two ways to install closest.
 Usage: closest [options] [pattern]
 Options:
   -a    Search all files[default: false]
+  -r    Use regex pattern for matching[default: false]
   -v    Show version
 ```
 
@@ -92,4 +93,27 @@ The output:
 /home/app/terraform/example-service/.envrc
 /home/app/terraform/.envrc
 /home/app/.envrc
+```
+
+### Example 3: Find YAML files using regex pattern
+
+Sometimes you want to find files that match a pattern rather than an exact name. For example, you might want to find all YAML files in the current directory or parent directories. In that case, you can use the `-r` option to enable regex pattern matching.
+
+```sh
+closest -r ".*\.ya?ml$"
+```
+
+This will find the closest file with a `.yml` or `.yaml` extension. You can combine this with the `-a` option to find all matching files:
+
+```sh
+closest -a -r ".*\.ya?ml$"
+```
+
+The output might look like:
+
+```sh
+/home/app/terraform/example-service/production/config.yaml
+/home/app/terraform/example-service/terraform.yaml
+/home/app/terraform/main.yml
+/home/app/config.yml
 ```
