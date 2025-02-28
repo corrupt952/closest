@@ -151,13 +151,13 @@ func TestFindClosestRegex(t *testing.T) {
 
 	// Test cases
 	testCases := []struct {
-		name             string
-		startDir         string
-		pattern          string
-		searchAll        bool
-		expected         []string
+		name              string
+		startDir          string
+		pattern           string
+		searchAll         bool
+		expected          []string
 		expectSingleMatch bool
-		expectErr        bool
+		expectErr         bool
 	}{
 		{
 			name:      "Find closest YAML file with regex from level3",
@@ -167,7 +167,7 @@ func TestFindClosestRegex(t *testing.T) {
 			// We don't care which YAML file is found first, just that one is found
 			// The order depends on the filesystem
 			expectSingleMatch: true,
-			expectErr: false,
+			expectErr:         false,
 		},
 		{
 			name:      "Find all YAML files with regex from level3",
