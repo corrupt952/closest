@@ -168,7 +168,10 @@ func TestRun(t *testing.T) {
 			w.Close()
 			os.Stdout = oldStdout
 			var buf bytes.Buffer
-			buf.ReadFrom(r)
+			_, err2 := buf.ReadFrom(r)
+			if err2 != nil {
+				t.Fatalf("Failed to read from pipe: %v", err2)
+			}
 
 			// Check error
 			if (err != nil) != tc.expectErr {
@@ -200,7 +203,10 @@ func TestPrintUsage(t *testing.T) {
 
 	// Read captured output
 	var buf bytes.Buffer
-	buf.ReadFrom(r)
+	_, err := buf.ReadFrom(r)
+	if err != nil {
+		t.Fatalf("Failed to read from pipe: %v", err)
+	}
 	output := buf.String()
 
 	// Check output
