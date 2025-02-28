@@ -15,6 +15,12 @@ func TestParseFlags(t *testing.T) {
 		os.Args = originalArgs
 	}()
 
+	// Save original flag.CommandLine and restore it after the test
+	origFlagCommandLine := flag.CommandLine
+	defer func() {
+		flag.CommandLine = origFlagCommandLine
+	}()
+
 	testCases := []struct {
 		name           string
 		args           []string
@@ -104,6 +110,76 @@ func TestParseFlags(t *testing.T) {
 			}
 			if showVersion != tc.expectVersion {
 				t.Errorf("Expected showVersion: %v, got: %v", tc.expectVersion, showVersion)
+			}
+		})
+	}
+}
+
+func TestRun(t *testing.T) {
+	// Save original args and restore them after the test
+	originalArgs := os.Args
+	defer func() {
+		os.Args = originalArgs
+	}()
+
+	// Save original flag.CommandLine and restore it after the test
+	origFlagCommandLine := flag.CommandLine
+	defer func() {
+		flag.CommandLine = origFlagCommandLine
+	}()
+
+	// Test cases
+	testCases := []struct {
+		name      string
+		args      []string
+		expectErr bool
+		errorMsg  string
+	}{
+		{
+			name:      "Missing pattern",
+			args:      []string{"closest"},
+			expectErr: true,
+			errorMsg:  "error parsing flags: missing pattern argument",
+		},
+		{
+			name:      "Version flag",
+			args:      []string{"closest", "-v"},
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Set up args for this test case
+			os.Args = tc.args
+
+			// Reset flags for each test
+			flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+
+			// Capture stdout to avoid printing during tests
+			oldStdout := os.Stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+
+			// Call the function being tested
+			err := run()
+
+			// Restore stdout
+			w.Close()
+			os.Stdout = oldStdout
+			var buf bytes.Buffer
+			buf.ReadFrom(r)
+
+			// Check error
+			if (err != nil) != tc.expectErr {
+				t.Errorf("Expected error: %v, got: %v", tc.expectErr, err != nil)
+			}
+
+			// Check error message if expected
+			if tc.expectErr && err != nil && tc.errorMsg != "" {
+				if !strings.Contains(err.Error(), tc.errorMsg) {
+					t.Errorf("Expected error message to contain '%s', got: '%s'", tc.errorMsg, err.Error())
+				}
 			}
 		})
 	}

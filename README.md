@@ -55,6 +55,13 @@ Options:
   -v    Show version
 ```
 
+### Exit Codes
+
+The tool uses the following exit codes:
+
+- `0`: Success - Files were found and output
+- `1`: Error - An error occurred (file not found, invalid regex, permission denied, etc.)
+
 ### Basic Usage
 
 Find the closest file matching a specific name:
@@ -140,6 +147,30 @@ Output:
 
 > **Note:** Command options must come before the filename. For example, `closest .envrc -a` doesn't work.
 
+## Error Handling
+
+`closest` provides clear error messages for common issues:
+
+- **File not found**: When no matching files are found in the directory hierarchy
+  ```
+  Error: file not found: config.json
+  ```
+
+- **Invalid regex pattern**: When the provided regex pattern is invalid
+  ```
+  Error: invalid regex pattern: error parsing regexp: missing closing ]: `[abc`
+  ```
+
+- **Permission denied**: When the tool cannot access a directory due to permission issues
+  ```
+  Error: failed to read directory /path/to/restricted: permission denied
+  ```
+
+- **Missing pattern argument**: When no search pattern is provided
+  ```
+  Error: error parsing flags: missing pattern argument
+  ```
+
 ### Example 3: Finding configuration files with regex
 
 Sometimes you need to find configuration files that might have different extensions. The `-r` option enables regex pattern matching for flexible searches.
@@ -163,6 +194,29 @@ Output:
 /home/app/terraform/main.yml
 /home/app/config.yml
 ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **No files found**
+   - Check if the file exists in any parent directory
+   - Verify the spelling and case of the filename (filesystems may be case-sensitive)
+   - If using regex, ensure the pattern is correct
+
+2. **Permission errors**
+   - Ensure you have read permissions for all directories in the path
+   - Try running with elevated privileges if necessary
+
+3. **Regex not matching**
+   - Test your regex pattern with a regex testing tool
+   - Remember to escape special characters
+   - For complex patterns, start simple and build up
+
+### Debugging Tips
+
+- Use the `-a` flag to see all matching files, which can help identify if files exist but aren't where expected
+- For regex issues, try simplifying your pattern first, then make it more specific
 
 ## Contributing
 

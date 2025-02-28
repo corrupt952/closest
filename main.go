@@ -42,7 +42,7 @@ func parseFlags() (pattern string, searchAll bool, useRegex bool, showVersion bo
 func run() error {
 	pattern, searchAll, useRegex, showVersion, err := parseFlags()
 	if err != nil {
-		return err
+		return fmt.Errorf("error parsing flags: %w", err)
 	}
 
 	if showVersion {
@@ -58,7 +58,7 @@ func run() error {
 	}
 
 	if err != nil {
-		return err
+		return err // Error is already wrapped in finder package
 	}
 
 	fmt.Println(strings.Join(paths, "\n"))
@@ -67,7 +67,7 @@ func run() error {
 
 func main() {
 	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(1)
 	}
 }
