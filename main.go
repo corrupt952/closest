@@ -8,6 +8,9 @@ import (
 	"strings"
 )
 
+// Version is set during build using ldflags
+var Version string
+
 func findClosest(filename string, searchAll bool) ([]string, error) {
 	pwd, err := os.Getwd()
 	if err != nil {
@@ -44,7 +47,13 @@ func printUsage() {
 func main() {
 	flag.Usage = printUsage
 	searchAll := flag.Bool("a", false, "Search all files[default: false]")
+	showVersion := flag.Bool("v", false, "Show version")
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println("closest version", Version)
+		os.Exit(0)
+	}
 
 	args := flag.Args()
 	if len(args) < 1 {

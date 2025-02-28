@@ -15,6 +15,7 @@ There are two ways to install closest.
 Usage: closest [options] [pattern]
 Options:
   -a    Search all files[default: false]
+  -v    Show version
 ```
 
 To find a closest file the current directory, run the following:
