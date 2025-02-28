@@ -1,13 +1,49 @@
 # closest
 
-The command that searches the current directory or parent directories for a specific file and returns the closest path.
+[![Go Report Card](https://goreportcard.com/badge/github.com/corrupt952/closest)](https://goreportcard.com/report/github.com/corrupt952/closest)
+[![Test](https://github.com/corrupt952/closest/actions/workflows/test.yml/badge.svg)](https://github.com/corrupt952/closest/actions/workflows/test.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Install
+A lightweight command-line tool that searches the current directory or parent directories for specific files and returns the closest path.
 
-There are two ways to install closest.
+## Why closest?
 
-- Download the binary from GitHub Releases
-- Install via [aqua](https://github.com/aquaproj/aqua)
+Many tools only look for configuration files in the current directory or in the home directory, but not in parent directories. This makes it difficult to use these tools in monorepos or nested project structures.
+
+`closest` solves this problem by finding the nearest matching file in the directory hierarchy, making it easy to:
+
+- Use tools with configuration files in parent directories
+- Find configuration files in monorepo structures
+- Locate files without knowing their exact location
+- Troubleshoot configuration inheritance
+
+## Installation
+
+### Download binary
+
+Download the latest binary from [GitHub Releases](https://github.com/corrupt952/closest/releases).
+
+```sh
+# Example for Linux (amd64)
+curl -L https://github.com/corrupt952/closest/releases/latest/download/closest_linux_amd64.tar.gz | tar xz
+sudo mv closest /usr/local/bin/
+```
+
+### Install via aqua
+
+If you use [aqua](https://github.com/aquaproj/aqua), you can install `closest` with:
+
+```sh
+aqua g -i corrupt952/closest
+```
+
+### Build from source
+
+```sh
+git clone https://github.com/corrupt952/closest.git
+cd closest
+go build
+```
 
 ## Usage
 
@@ -19,50 +55,61 @@ Options:
   -v    Show version
 ```
 
-To find a closest file the current directory, run the following:
+### Basic Usage
+
+Find the closest file matching a specific name:
 
 ```sh
 closest .tflint.hcl
+# Output: /path/to/closest/.tflint.hcl
 ```
 
-To find all files from the current directory to root directory, run the following:
+Find all matching files from current directory to root:
 
 ```sh
 closest -a .envrc
+# Output: 
+# /current/path/.envrc
+# /current/.envrc
+# /home/user/.envrc
 ```
 
-### Example 1: Find a .tflint.hcl file and run tflint
+Find files using regex patterns:
 
+```sh
+closest -r ".*\.ya?ml$"
+# Output: /path/to/closest/config.yaml
+```
 
-`tflint` only references `.tflint.hcl` in the current or home directory.
-This makes it easy to read per-project settings in the repository root or in the terraform directory in monorepo.
+## Examples
 
-The directory structure is as follows, where `staging` is the current directory.
+### Example 1: Using with tflint
 
+`tflint` only references `.tflint.hcl` in the current or home directory. With `closest`, you can use project-specific settings from parent directories in a monorepo.
+
+Directory structure:
 ```
 /
 └── home
-    └── app
-        └── terraform
-            ├── .tflint.hcl
-            └── example-service
+    └── app
+        └── terraform
+            ├── .tflint.hcl
+            └── example-service
                 ├── production
                 └── staging # <- current directory
 ```
 
-To run `tflint` in combination with `closest`, run the following:
+Run tflint with the closest configuration:
 
 ```sh
 tflint --config $(closest .tflint.hcl)
 ```
 
-### Example 2: Find all .envrc files up to the root directory
+### Example 2: Troubleshooting direnv configuration
 
-Sometimes when using `direnv`, you want to find where `.envrc` is defined from the root directory to the current directory.
-In that case, you can use the `-a` option to display all `.envrc` files up to the root directory, which is useful for troubleshooting.
+When using `direnv`, you might want to find all `.envrc` files that affect the current directory. The `-a` option helps with troubleshooting by showing all relevant files.
 
-The directory structure is as follows, where `production` is the current directory.
-
+Directory structure:
 ```
 /
 └── home
@@ -77,17 +124,13 @@ The directory structure is as follows, where `production` is the current directo
                 └── staging
 ```
 
-To find all `.envrc` from `production` to the root directory, run the following:
+Find all `.envrc` files from current directory to root:
 
 ```sh
 closest -a .envrc
 ```
 
-Please take care that **the filename must be prefix with `-a`**.
-For example, `closest .envrc -a` doesn't work.
-
-The output:
-
+Output:
 ```sh
 /home/app/terraform/example-service/production/.envrc
 /home/app/terraform/example-service/.envrc
@@ -95,25 +138,42 @@ The output:
 /home/app/.envrc
 ```
 
-### Example 3: Find YAML files using regex pattern
+> **Note:** Command options must come before the filename. For example, `closest .envrc -a` doesn't work.
 
-Sometimes you want to find files that match a pattern rather than an exact name. For example, you might want to find all YAML files in the current directory or parent directories. In that case, you can use the `-r` option to enable regex pattern matching.
+### Example 3: Finding configuration files with regex
+
+Sometimes you need to find configuration files that might have different extensions. The `-r` option enables regex pattern matching for flexible searches.
+
+Find the closest YAML configuration file:
 
 ```sh
 closest -r ".*\.ya?ml$"
 ```
 
-This will find the closest file with a `.yml` or `.yaml` extension. You can combine this with the `-a` option to find all matching files:
+Find all YAML files in the directory hierarchy:
 
 ```sh
 closest -a -r ".*\.ya?ml$"
 ```
 
-The output might look like:
-
+Output:
 ```sh
 /home/app/terraform/example-service/production/config.yaml
 /home/app/terraform/example-service/terraform.yaml
 /home/app/terraform/main.yml
 /home/app/config.yml
 ```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
