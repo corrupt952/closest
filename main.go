@@ -19,7 +19,7 @@ func findClosest(filename string, searchAll bool) ([]string, error) {
 	}
 
 	var paths []string
-	for true {
+	for {
 		path := filepath.Join(pwd, filename)
 		if _, err := os.Stat(path); err == nil {
 			paths = append(paths, path)
@@ -51,7 +51,7 @@ func findClosestRegex(pattern string, searchAll bool) ([]string, error) {
 	}
 
 	var paths []string
-	for true {
+	for {
 		// Read all files in the current directory
 		entries, err := os.ReadDir(pwd)
 		if err != nil {

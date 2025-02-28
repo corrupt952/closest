@@ -71,7 +71,12 @@ func TestFindClosest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get current directory: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() {
+		err := os.Chdir(originalDir)
+		if err != nil {
+			t.Fatalf("Failed to restore original directory: %v", err)
+		}
+	}()
 
 	// Test cases
 	testCases := []struct {
@@ -126,10 +131,22 @@ func TestFindClosest(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Change to the test directory
+			// Change to the test directory and save original directory
+			origDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("Failed to get current directory: %v", err)
+			}
+
 			if err := os.Chdir(tc.startDir); err != nil {
 				t.Fatalf("Failed to change directory to %s: %v", tc.startDir, err)
 			}
+
+			// Ensure we change back to the original directory after the test
+			defer func() {
+				if err := os.Chdir(origDir); err != nil {
+					t.Fatalf("Failed to restore directory: %v", err)
+				}
+			}()
 
 			// Call the function being tested
 			paths, err := findClosest(tc.filename, tc.searchAll)
@@ -169,7 +186,12 @@ func TestFindClosestRegex(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get current directory: %v", err)
 	}
-	defer os.Chdir(originalDir)
+	defer func() {
+		err := os.Chdir(originalDir)
+		if err != nil {
+			t.Fatalf("Failed to restore original directory: %v", err)
+		}
+	}()
 
 	// Test cases
 	testCases := []struct {
@@ -227,10 +249,22 @@ func TestFindClosestRegex(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Change to the test directory
+			// Change to the test directory and save original directory
+			origDir, err := os.Getwd()
+			if err != nil {
+				t.Fatalf("Failed to get current directory: %v", err)
+			}
+
 			if err := os.Chdir(tc.startDir); err != nil {
 				t.Fatalf("Failed to change directory to %s: %v", tc.startDir, err)
 			}
+
+			// Ensure we change back to the original directory after the test
+			defer func() {
+				if err := os.Chdir(origDir); err != nil {
+					t.Fatalf("Failed to restore directory: %v", err)
+				}
+			}()
 
 			// Call the function being tested
 			paths, err := findClosestRegex(tc.pattern, tc.searchAll)
