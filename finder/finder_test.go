@@ -56,7 +56,7 @@ func createTestEnvironment(t *testing.T) (string, func()) {
 
 	// Return cleanup function
 	cleanup := func() {
-		os.RemoveAll(tempDir)
+		_ = os.RemoveAll(tempDir)
 	}
 
 	return tempDir, cleanup

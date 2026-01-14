@@ -165,7 +165,7 @@ func TestRun(t *testing.T) {
 			err := run()
 
 			// Restore stdout
-			w.Close()
+			_ = w.Close()
 			os.Stdout = oldStdout
 			var buf bytes.Buffer
 			_, err2 := buf.ReadFrom(r)
@@ -198,7 +198,7 @@ func TestPrintUsage(t *testing.T) {
 	printUsage()
 
 	// Restore stdout
-	w.Close()
+	_ = w.Close()
 	os.Stdout = oldStdout
 
 	// Read captured output
