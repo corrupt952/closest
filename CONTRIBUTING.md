@@ -7,7 +7,8 @@ Thank you for your interest in contributing to `closest`! This document provides
 ### Prerequisites
 
 - Git
-- Go 1.22 or later (we recommend using [aqua](https://github.com/aquaproj/aqua) for installation)
+- [Nix](https://nixos.org/download.html) with flakes enabled
+- [direnv](https://direnv.net/) (recommended)
 
 ### Setting Up the Development Environment
 
@@ -18,20 +19,20 @@ Thank you for your interest in contributing to `closest`! This document provides
    cd closest
    ```
 
-2. **Install Go using aqua**
+2. **Enter the development environment**
 
-   If you have aqua installed:
+   If you have direnv installed and hooked into your shell:
 
    ```sh
-   aqua i
+   direnv allow
    ```
 
-   This will install the Go version specified in the `aqua.yaml` file.
+   This will automatically load the environment defined in `flake.nix` (Go, gopls, gotools, golangci-lint, goreleaser).
 
-3. **Install development dependencies**
+   Without direnv, you can enter the shell manually:
 
    ```sh
-   go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+   nix develop
    ```
 
 ## Development Workflow
