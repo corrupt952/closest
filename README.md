@@ -29,6 +29,18 @@ curl -L https://github.com/corrupt952/closest/releases/latest/download/closest_l
 sudo mv closest /usr/local/bin/
 ```
 
+### Nix
+
+```sh
+# Run without installing
+nix run github:corrupt952/closest -- --help
+
+# Install into your profile
+nix profile install github:corrupt952/closest
+```
+
+Builds from source on the current main; `closest -v` reports the commit hash it was built from.
+
 ### Install via aqua
 
 If you use [aqua](https://github.com/aquaproj/aqua), you can install `closest` with:
