@@ -33,13 +33,13 @@ sudo mv closest /usr/local/bin/
 
 ```sh
 # Run without installing
-nix run github:corrupt952/closest -- --help
+nix run github:corrupt952/closest -- help
 
 # Install into your profile
 nix profile install github:corrupt952/closest
 ```
 
-Builds from source on the current main; `closest -v` reports the commit hash it was built from.
+Builds from source on the current main; `closest version` reports the commit hash it was built from.
 
 ### Install via aqua
 
@@ -60,12 +60,16 @@ go build
 ## Usage
 
 ```sh
-Usage: closest [options] [pattern]
-Options:
+Usage: closest [search] [options] [pattern]
+Commands:
+  search [-a] [-r] <pattern>    Find the closest matching file
+  version                       Print closest version
+Options (search):
   -a    Search all files[default: false]
   -r    Use regex pattern for matching[default: false]
-  -v    Show version
 ```
+
+`search` is the default command: `closest .envrc` and `closest search .envrc` are equivalent. To search for a file literally named `search`, `version`, `help`, or `commands`, spell out the `search` command explicitly (e.g. `closest search version`).
 
 ### Exit Codes
 
@@ -73,20 +77,21 @@ The tool uses the following exit codes:
 
 - `0`: Success - Files were found and output
 - `1`: Error - An error occurred (file not found, invalid regex, permission denied, etc.)
+- `2`: Usage error - Wrong number of arguments to `search` or `version`
 
 ### Basic Usage
 
 Find the closest file matching a specific name:
 
 ```sh
-closest .tflint.hcl
+closest search .tflint.hcl
 # Output: /path/to/closest/.tflint.hcl
 ```
 
 Find all matching files from current directory to root:
 
 ```sh
-closest -a .envrc
+closest search -a .envrc
 # Output: 
 # /current/path/.envrc
 # /current/.envrc
@@ -96,7 +101,7 @@ closest -a .envrc
 Find files using regex patterns:
 
 ```sh
-closest -r ".*\.ya?ml$"
+closest search -r ".*\.ya?ml$"
 # Output: /path/to/closest/config.yaml
 ```
 
@@ -121,7 +126,7 @@ Directory structure:
 Run tflint with the closest configuration:
 
 ```sh
-tflint --config $(closest .tflint.hcl)
+tflint --config $(closest search .tflint.hcl)
 ```
 
 ### Example 2: Troubleshooting direnv configuration
@@ -146,7 +151,7 @@ Directory structure:
 Find all `.envrc` files from current directory to root:
 
 ```sh
-closest -a .envrc
+closest search -a .envrc
 ```
 
 Output:
@@ -157,7 +162,7 @@ Output:
 /home/app/.envrc
 ```
 
-> **Note:** Command options must come before the filename. For example, `closest .envrc -a` doesn't work.
+> **Note:** Command options must come before the filename. For example, `closest search .envrc -a` doesn't work.
 
 ## Error Handling
 
@@ -180,7 +185,7 @@ Output:
 
 - **Missing pattern argument**: When no search pattern is provided
   ```
-  Error: error parsing flags: missing pattern argument
+  search [-a] [-r] <pattern>: Find the closest matching file
   ```
 
 ### Example 3: Finding configuration files with regex
@@ -190,13 +195,13 @@ Sometimes you need to find configuration files that might have different extensi
 Find the closest YAML configuration file:
 
 ```sh
-closest -r ".*\.ya?ml$"
+closest search -r ".*\.ya?ml$"
 ```
 
 Find all YAML files in the directory hierarchy:
 
 ```sh
-closest -a -r ".*\.ya?ml$"
+closest search -a -r ".*\.ya?ml$"
 ```
 
 Output:

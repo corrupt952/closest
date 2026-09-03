@@ -1,5 +1,5 @@
 VERSION ?= 0.0.0
-LDFLAGS ?= -ldflags "-s -w -X 'main.Version=$(VERSION)'"
+LDFLAGS ?= -ldflags "-s -w -X 'corrupt952/closest/command.Version=$(VERSION)'"
 
 # HACK: make [target] [ARGS...]
 ARGS = $(filter-out $@,$(MAKECMDGOALS))

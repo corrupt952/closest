@@ -1,73 +1,45 @@
 package main
 
 import (
-	"corrupt952/closest/finder"
+	"context"
 	"flag"
-	"fmt"
 	"os"
-	"strings"
+
+	"github.com/google/subcommands"
+
+	"corrupt952/closest/command"
 )
 
-// Version is set during build using ldflags
-var Version string
-
-// printUsage prints the usage information for the command
-func printUsage() {
-	fmt.Println("Usage: closest [options] [pattern]")
-	fmt.Println("Options:")
-	flag.PrintDefaults()
+// knownCommands are the subcommand names dispatched directly; anything else
+// is treated as arguments to the implicit "search" command.
+var knownCommands = map[string]bool{
+	"search":   true,
+	"version":  true,
+	"help":     true,
+	"commands": true,
 }
 
-// parseFlags parses command line flags and returns the search parameters
-func parseFlags() (pattern string, searchAll bool, useRegex bool, showVersion bool, err error) {
-	flag.Usage = printUsage
-	searchAllPtr := flag.Bool("a", false, "Search all files[default: false]")
-	showVersionPtr := flag.Bool("v", false, "Show version")
-	useRegexPtr := flag.Bool("r", false, "Use regex pattern for matching[default: false]")
-	flag.Parse()
-
-	if *showVersionPtr {
-		return "", false, false, true, nil
+// withImplicitSearch lets `closest <pattern>` work without typing `search`:
+// if the first argument isn't a known subcommand name, it inserts "search"
+// so the default action stays "find the closest matching file".
+func withImplicitSearch(args []string) []string {
+	if len(args) < 2 || knownCommands[args[1]] {
+		return args
 	}
-
-	args := flag.Args()
-	if len(args) < 1 {
-		return "", false, false, false, fmt.Errorf("missing pattern argument")
-	}
-
-	return args[0], *searchAllPtr, *useRegexPtr, false, nil
-}
-
-// run executes the main program logic
-func run() error {
-	pattern, searchAll, useRegex, showVersion, err := parseFlags()
-	if err != nil {
-		return fmt.Errorf("error parsing flags: %w", err)
-	}
-
-	if showVersion {
-		fmt.Println("closest version", Version)
-		return nil
-	}
-
-	var paths []string
-	if useRegex {
-		paths, err = finder.FindClosestRegex(pattern, searchAll)
-	} else {
-		paths, err = finder.FindClosest(pattern, searchAll)
-	}
-
-	if err != nil {
-		return err // Error is already wrapped in finder package
-	}
-
-	fmt.Println(strings.Join(paths, "\n"))
-	return nil
+	out := make([]string, 0, len(args)+1)
+	out = append(out, args[0], "search")
+	out = append(out, args[1:]...)
+	return out
 }
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-		os.Exit(1)
-	}
+	subcommands.Register(&command.SearchCommand{}, "")
+	subcommands.Register(&command.VersionCommand{}, "")
+	subcommands.Register(subcommands.HelpCommand(), "")
+	subcommands.Register(subcommands.CommandsCommand(), "")
+
+	os.Args = withImplicitSearch(os.Args)
+
+	flag.Parse()
+	os.Exit(int(subcommands.Execute(context.Background())))
 }
