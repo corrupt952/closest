@@ -1,4 +1,4 @@
-module corrupt952/closest
+module github.com/corrupt952/closest/v2
 
 go 1.22
 
