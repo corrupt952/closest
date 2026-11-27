@@ -28,7 +28,7 @@
             src = pkgs.lib.cleanSource self;
             vendorHash = "sha256-vU5ZB9c4xqvWEk7NZkchaUlGS0mzDi5YHbe/Apq+FaU=";
             # Keep in sync with .goreleaser.yml ldflags.
-            ldflags = [ "-s" "-w" "-X" "corrupt952/closest/command.Version=${version}" ];
+            ldflags = [ "-s" "-w" "-X" "github.com/corrupt952/closest/v2/command.Version=${version}" ];
             # The finder tests walk up parent directories from the working
             # directory, which makes them sensitive to the sandbox's directory
             # layout. CI runs `go test` directly.

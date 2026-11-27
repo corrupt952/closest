@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/subcommands"
 
-	"corrupt952/closest/command"
+	"github.com/corrupt952/closest/v2/command"
 )
 
 // knownCommands are the subcommand names dispatched directly; anything else

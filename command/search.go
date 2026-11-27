@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"corrupt952/closest/finder"
+	"github.com/corrupt952/closest/v2/finder"
 
 	"github.com/google/subcommands"
 )
