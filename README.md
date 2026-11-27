@@ -24,9 +24,16 @@ Many tools only look for configuration files in the current directory or in the 
 Download the latest binary from [GitHub Releases](https://github.com/corrupt952/closest/releases).
 
 ```sh
-# Example for Linux (amd64)
-curl -L https://github.com/corrupt952/closest/releases/latest/download/closest_linux_amd64.tar.gz | tar xz
+# Example for Linux (amd64). Asset names carry the version, so set it to the latest release.
+VERSION=2.0.2
+curl -L "https://github.com/corrupt952/closest/releases/download/v${VERSION}/closest_${VERSION}_linux_amd64.tar.gz" | tar xz closest
 sudo mv closest /usr/local/bin/
+```
+
+### go install
+
+```sh
+go install github.com/corrupt952/closest/v2@latest
 ```
 
 ### Nix
